@@ -6,12 +6,15 @@
 
 /*Header*/
 .layout .header{
-    background-color: black;
+    background-color: #ffffff;
     color: #5f4646;
     display: flex; /* Utilizamos flexbox */
     align-items: center; /* Centramos verticalmente los elementos */
-    justify-content: end;
+    justify-content: start;
     height: 7vh;
+    border-bottom: 2px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    
 }
 .layout .header .header_contenedor {
     margin-right: 2%;
@@ -20,7 +23,7 @@
 
 /*Btns header*/
 .layout .header .header_contenedor a {
-    color: #fff;
+    color: #000000;
     font-size: 18px;
     text-decoration: none;/*saco subrayado*/
     transition: 0.7s;
@@ -35,12 +38,16 @@
     transition: 0.7s;
 }
 
+
 /*Fin Header*/
 /*leftSide*/
     .layout .leftSide{
-        background-color: black;
+        background-color: #f5f4fa;
         width: 4vw;
         height: calc(100vh - 14vh);
+        border-right: 2px solid #ccc;
+        border-bottom: 2px solid #ccc;
+        
     }
 
 /*Fin leftSide*/
@@ -68,54 +75,106 @@
 
 /*inicio Body*/
 
-/*Fin body*/
+
 .layout .body{
-    background-color: red;
+    background-image: url(../imagenes/escritorio.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
     height: calc(100vh - 14vh);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));/*Auto-fit hace dinamica la cantidad de divs*/
 }
+.layout .body .div_seccion {
+    background-color: rgba(237, 237, 237, 0.587);
+    text-align: center;
+    font-size: 18px;
+    border: 1px solid #000000;
+    margin: 10px;
+    display: flex;
+    flex-direction: column; /* Establecer el diseño en columna */
+    align-items: center; /* Centrar los elementos horizontalmente */
+}
+
+.layout .body .div_seccion h3 {
+    border-bottom: #000000 1px solid;
+    margin-bottom: 10px; /* Espacio inferior para separar los botones */
+    width: 100%;
+}
+
+.layout .body .div_seccion .btn-container {
+    display: flex;
+    gap: 10px; /* Espacio entre los botones */
+    margin-top: auto; /* Empujar el contenedor de botones hacia abajo */
+}
+.layout .body .div_seccion .btn-container .btn_agregar{
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 5%;
+    transition: 0.7s;
+}
+.layout .body .div_seccion .btn-container .btn_agregar:hover{
+    background-color: #317734;
+    transition: 0.7s;
+}
+.layout .body .div_seccion .btn-container .btn_borrar{
+    padding: 10px 20px;
+    background-color: #e92a2a;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 5%;
+    transition: 0.7s;
+}
+.layout .body .div_seccion .btn-container .btn_borrar:hover{
+    background-color: #b21e1e;
+    transition: 0.7s;
+}
+
+
+/*Fin body*/
 /*Medias*/
 /*Celular*/
 @media (max-width: 360px) {
     .layout {
         width: 360px;
         height: 800px;
-      
         display: grid;
         grid:
-          "header header header" auto
-          "leftSide body ." 1fr
-          "footer footer footer" auto
-          / auto 1fr auto;
+            "header header header" auto
+            "leftSide body ." 1fr
+            "footer footer footer" auto
+            / auto 1fr auto;
         gap: 8px;
-      }
-      
-      .header { grid-area: header; }
-      .leftSide { grid-area: leftSide; }
-      .body { grid-area: body; }
-      .footer { grid-area: footer; 
+    }
+    .header { grid-area: header; }
+    .leftSide { grid-area: leftSide; }
+    .body { grid-area: body; }
+    .footer { grid-area: footer; 
     }
 }
 
 /*Tablet*/
 @media (min-width: 361px) and (max-width: 1024px) {
-.layout {
+    .layout {
     width: 1024px;
     height: 768px;
-  
     display: grid;
     grid:
-      "header header header" auto
-      "leftSide body ." 1fr
-      "footer footer footer" auto
-      / auto 1fr auto;
+        "header header header" auto
+        "leftSide body ." 1fr
+        "footer footer footer" auto
+        / auto 1fr auto;
     gap: 8px;
-  }
-  
-  .header { grid-area: header; }
-  .leftSide { grid-area: leftSide; }
-  .body { grid-area: body; }
-  .footer { grid-area: footer; }
-
+    }
+    .header { grid-area: header; }
+    .leftSide { grid-area: leftSide; }
+    .body { grid-area: body; }
+    .footer { grid-area: footer; }
 }
 
 /*Laptop*/
@@ -124,44 +183,39 @@
     .layout {
         width: 1366px;
         height: 768px;
-      
         display: grid;
         grid:
-          "header header header" auto
-          "leftSide body ." 1fr
-          "footer footer footer" auto
-          / auto 1fr auto;
+            "header header header" auto
+            "leftSide body ." 1fr
+            "footer footer footer" auto
+            / auto 1fr auto;
         gap: 8px;
-      }
-      
-      .header { grid-area: header; }
-      .leftSide { grid-area: leftSide; }
-      .body { grid-area: body; }
-      .footer { grid-area: footer; 
+    }
+        .header { grid-area: header; }
+        .leftSide { grid-area: leftSide; }
+        .body { grid-area: body; }
+        .footer { grid-area: footer; 
     }
 }
 
 @media (min-width: 1367px){
     .layout {
-        
         display: grid;
         grid:
-          "header header header" auto
-          "leftSide body ." 1fr
-          "footer footer footer" auto
-          / auto 1fr auto;
-      }
-      
-      .header { grid-area: header;}
-      .leftSide { grid-area: leftSide; }
-      .body { grid-area: body; }
-      .footer { grid-area: footer; 
+            "header header header" auto
+            "leftSide body ." 1fr
+            "footer footer footer" auto
+            / auto 1fr auto;
     }
-
+        .header { grid-area: header;}
+        .leftSide { grid-area: leftSide; }
+        .body { grid-area: body; }
+        .footer { grid-area: footer; 
+    }
     .body .tarjetas{  
         display: grid;
         grid-template-rows: repeat(auto-fit, 1fr);
         grid-template-columns: repeat(3, 1fr);
         gap: 8px;
-      }
+    }
 }
