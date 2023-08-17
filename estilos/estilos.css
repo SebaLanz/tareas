@@ -134,7 +134,28 @@
     background-color: #b21e1e;
     transition: 0.7s;
 }
+.layout .body .div_seccion .tarjetas-container{
+    width: 100%;
+}
+.layout .body .div_seccion .tarjetas-container .card{
+    width: 80%;
+    margin-left: 10%;
+    margin-bottom: 25px;
+}
+.layout .body .div_seccion .tarjetas-container .card .card-body a{
+    background-color: #4CAF50 !important;
+    border-color: #4CAF50;
+    width: 30%;
+    transition: 0.7s;
 
+}
+.layout .body .div_seccion .tarjetas-container .card .card-body a:hover{
+    background-color: #317734 !important;
+    border-color: #317734;
+    width: 30%;
+    transition: 0.7s;
+
+}
 
 /*Fin body*/
 /*Medias*/

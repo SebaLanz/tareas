@@ -35,5 +35,15 @@ document.addEventListener("DOMContentLoaded", function() {
         const seccionId = seccion.dataset.id;
         objSweet.loadTarjetas(seccionId);
     });
+
+    //eliminar tarjeta.
+    document.addEventListener('click', (event) => {
+        if (event.target.classList.contains('btn_borrar')) {
+            objSweet.borrarSeccion(event);
+        } else if (event.target.classList.contains('btn_eliminar_tarjeta')) {
+            objSweet.eliminarTarjeta(event);
+        }
+    });
+    
 });
 

@@ -120,6 +120,7 @@ class SweetAlert {
             const seccionId = seccionDiv.dataset.id;
             localStorage.removeItem(`seccion-${seccionId}`);
             seccionDiv.remove();
+            this.alertaEliminar('Sección Eliminada.');
         }
     }
 
@@ -136,23 +137,84 @@ class SweetAlert {
             seccionDiv.insertBefore(nuevoTarjetasContainer, seccionDiv.querySelector('.btn-container'));
         }
 
+        const tarjetasData = JSON.parse(localStorage.getItem(`seccion-${seccionId}-tarjetas`)) || [];
         const tarjetaId = this.getTarjetaId(seccionId); // Obtener un ID único para la tarjeta
+
         const nuevaTarjeta = document.createElement('div');
         nuevaTarjeta.className = 'card';
-        nuevaTarjeta.innerHTML = `
-            <h5 class="card-header">Título de la carta</h5>
-            <div class="card-body">
-                <h5 class="card-title">Título del contenido</h5>
-                <p class="card-text">Contenido del párrafo</p>
-                <a href="#" class="btn btn-primary">Editar</a>
-            </div>
-        `;
 
-        nuevaTarjeta.dataset.id = tarjetaId; // Asignar el ID a la tarjeta
+        const nuevoCardHeader = document.createElement('h5');
+        nuevoCardHeader.className = 'card-header';
+        nuevoCardHeader.textContent = 'Título de la carta';
+
+        const cardBody = document.createElement('div');
+        cardBody.className = 'card-body';
+
+        const nuevoCardText = document.createElement('p');
+        nuevoCardText.className = 'card-text';
+        nuevoCardText.textContent = 'Contenido del párrafo';
+
+        const editarBtn = document.createElement('a');
+        editarBtn.href = '#';
+        editarBtn.className = 'btn btn-primary';
+        editarBtn.textContent = 'Editar';
+
+        const eliminarBtn = document.createElement('a'); // Agregamos un botón de eliminar
+        eliminarBtn.href = '#';
+        eliminarBtn.className = 'btn btn-danger btn_eliminar_tarjeta'; // Asignar clase al botón
+        eliminarBtn.textContent = 'Eliminar';
+
+        cardBody.appendChild(nuevoCardText);
+        cardBody.appendChild(editarBtn);
+        cardBody.appendChild(eliminarBtn); // Agregamos el botón de eliminar a la tarjeta
+
+        nuevaTarjeta.appendChild(nuevoCardHeader);
+        nuevaTarjeta.appendChild(cardBody);
+
+        const cardId = `tarjeta-${seccionId}-${tarjetaId}`; // Crear un ID único para la tarjeta
+        nuevaTarjeta.dataset.id = cardId; // Asignar el ID a la tarjeta
         tarjetasContainer.appendChild(nuevaTarjeta);
-        this.saveTarjetas(seccionId);
+    
+        // Guardar en el Local Storage
+        tarjetasData.push({
+            id: cardId,
+            titulo: nuevoCardHeader.textContent,
+            contenido: nuevoCardText.textContent
+        });
+    
+        localStorage.setItem(`seccion-${seccionId}-tarjetas`, JSON.stringify(tarjetasData));
+    
     }
 }
+
+
+eliminarTarjeta = (event) => {
+    const eliminarBtn = event.target.closest('.btn_eliminar_tarjeta');
+    if (eliminarBtn) {
+        const tarjetaDiv = eliminarBtn.closest('.card');
+        if (tarjetaDiv) {
+            const seccionDiv = tarjetaDiv.closest('.div_seccion');
+            if (seccionDiv) {
+                const seccionId = seccionDiv.dataset.id;
+                const tarjetaId = tarjetaDiv.dataset.id;
+
+                // Eliminar tarjeta del DOM
+                tarjetaDiv.remove();
+
+                // Actualizar Local Storage eliminando la tarjeta específica
+                const tarjetasData = JSON.parse(localStorage.getItem(`seccion-${seccionId}-tarjetas`)) || [];
+                const tarjetasActualizadas = tarjetasData.filter(tarjeta => tarjeta.id !== tarjetaId);
+                localStorage.setItem(`seccion-${seccionId}-tarjetas`, JSON.stringify(tarjetasActualizadas));
+
+                console.log('Local Storage actualizado después de eliminar tarjeta:', localStorage.getItem(`seccion-${seccionId}-tarjetas`));
+            }
+        }
+    }
+}
+
+
+
+
 
     getTarjetaId = (seccionId) => {
         const seccionIdNum = parseInt(seccionId);
@@ -161,82 +223,67 @@ class SweetAlert {
     }
 
 
-
-        
-        
-
     saveTarjetas = (seccionId) => {
         const seccionIdNum = parseInt(seccionId);
         const tarjetasContainer = document.querySelector(`[data-id="${seccionId}"] .tarjetas-container`);
         const tarjetas = tarjetasContainer.querySelectorAll('.card');
-
+    
         const tarjetasData = Array.from(tarjetas).map(tarjeta => ({
-            titulo: tarjeta.querySelector('.card-title').textContent,
+            titulo: tarjeta.querySelector('.card-header').textContent,
             contenido: tarjeta.querySelector('.card-text').textContent
         }));
-
+    
         localStorage.setItem(`seccion-${seccionIdNum}-tarjetas`, JSON.stringify(tarjetasData));
     }
 
     loadTarjetas = (seccionId) => {
+        const seccionIdNum = parseInt(seccionId);
+        const tarjetasData = JSON.parse(localStorage.getItem(`seccion-${seccionIdNum}-tarjetas`)) || [];
+    
         const seccionDiv = document.querySelector(`[data-id="${seccionId}"]`);
         if (seccionDiv) {
-            const tarjetasData = JSON.parse(localStorage.getItem(`seccion-${seccionId}-tarjetas`)) || [];
-            const tarjetasContainer = seccionDiv.querySelector('.tarjetas-container');
+            let tarjetasContainer = seccionDiv.querySelector('.tarjetas-container');
+            console.log('Tarjetas cargadas desde Local Storage:', tarjetasData);
+            if (!tarjetasContainer) {
+                tarjetasContainer = document.createElement('div');
+                tarjetasContainer.className = 'tarjetas-container';
+                seccionDiv.insertBefore(tarjetasContainer, seccionDiv.querySelector('.btn-container'));
+            }
     
-            if (tarjetasContainer) {
-                tarjetasContainer.innerHTML = ''; // Limpiar contenido anterior
+            // Limpiar contenido anterior del contenedor de tarjetas
+            tarjetasContainer.innerHTML = '';
     
-                for (const tarjetaData of tarjetasData) {
-                    const nuevaTarjeta = document.createElement('div');
-                    nuevaTarjeta.className = 'card';
-                    nuevaTarjeta.innerHTML = `
-                        <h5 class="card-header">${tarjetaData.titulo}</h5>
-                        <div class="card-body">
-                            <h5 class="card-title">${tarjetaData.titulo}</h5>
-                            <p class="card-text">${tarjetaData.contenido}</p>
-                            <a href="#" class="btn btn-primary">Editar</a>
-                        </div>
-                    `;
+            // Agregar tarjetas desde el Local Storage
+            for (const tarjetaData of tarjetasData) {
+                const nuevaTarjeta = document.createElement('div');
+                nuevaTarjeta.className = 'card';
+                nuevaTarjeta.innerHTML = `
+                    <h5 class="card-header">${tarjetaData.titulo}</h5>
+                    <div class="card-body">
+                        <p class="card-text">${tarjetaData.contenido}</p>
+                        <a href="#" class="btn btn-primary">Editar</a>
+                        <a href="#" class="btn btn-danger btn_eliminar_tarjeta">Eliminar</a>
+                    </div>
+                `;
     
-                    tarjetasContainer.appendChild(nuevaTarjeta);
-                }
-            } else {
-                const nuevoTarjetasContainer = document.createElement('div');
-                nuevoTarjetasContainer.className = 'tarjetas-container';
-    
-                for (const tarjetaData of tarjetasData) {
-                    const nuevaTarjeta = document.createElement('div');
-                    nuevaTarjeta.className = 'card';
-                    nuevaTarjeta.innerHTML = `
-                        <h5 class="card-header">${tarjetaData.titulo}</h5>
-                        <div class="card-body">
-                            <h5 class="card-title">${tarjetaData.titulo}</h5>
-                            <p class="card-text">${tarjetaData.contenido}</p>
-                            <a href="#" class="btn btn-primary">Editar</a>
-                        </div>
-                    `;
-    
-                    nuevoTarjetasContainer.appendChild(nuevaTarjeta);
-                }
-    
-                seccionDiv.insertBefore(nuevoTarjetasContainer, seccionDiv.querySelector('.btn-container'));
+                tarjetasContainer.appendChild(nuevaTarjeta);
             }
         }
     }
+    
     
 
     editarTarjeta = (event) => {
         const tarjetaDiv = event.target.closest('.card');
         if (tarjetaDiv) {
-            const tituloContenido = tarjetaDiv.querySelector('.card-title');
-            const parrafoContenido = tarjetaDiv.querySelector('.card-text');
-
+            const cardHeader = tarjetaDiv.querySelector('.card-header');
+            const cardText = tarjetaDiv.querySelector('.card-text');
+    
             Swal.fire({
                 title: 'Editar Tarjeta',
                 html: `
-                    <input id="inputTitulo" class="swal2-input" value="${tituloContenido.textContent}" placeholder="Título del contenido">
-                    <input id="inputParrafo" class="swal2-input" value="${parrafoContenido.textContent}" placeholder="Contenido del párrafo">
+                    <input id="inputHeader" class="swal2-input" value="${cardHeader.textContent}" placeholder="Título de la carta">
+                    <input id="inputText" class="swal2-input" value="${cardText.textContent}" placeholder="Contenido del párrafo">
                 `,
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -245,15 +292,26 @@ class SweetAlert {
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    const nuevoTitulo = document.getElementById('inputTitulo').value;
-                    const nuevoParrafo = document.getElementById('inputParrafo').value;
-
-                    tituloContenido.textContent = nuevoTitulo;
-                    parrafoContenido.textContent = nuevoParrafo;
+                    const nuevoHeader = document.getElementById('inputHeader').value;
+                    const nuevoText = document.getElementById('inputText').value;
+    
+                    cardHeader.textContent = nuevoHeader;
+                    cardText.textContent = nuevoText;
+    
+                    this.saveTarjetas(tarjetaDiv.closest('.div_seccion').dataset.id);
                 }
             });
         }
     }
+    
+    alertaEliminar = (secOtarjeta) => {
+        Swal.fire(
+            secOtarjeta,
+            ``,
+            'success'
+          )
+    }
+    
 }
 
 export default SweetAlert;
