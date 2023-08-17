@@ -13,7 +13,9 @@ class SweetAlert {
             const key = localStorage.key(i);
             if (key.startsWith('seccion-')) {
                 const seccionData = JSON.parse(localStorage.getItem(key));
-                secciones.push(seccionData);
+                if (seccionData.id) {
+                    secciones.push(seccionData);
+                }
             }
         }
 
@@ -30,6 +32,8 @@ class SweetAlert {
                 nuevoDiv.dataset.id = seccionData.id;
 
                 contenedor.appendChild(nuevoDiv);
+
+                this.loadTarjetas(seccionData.id); // Cargar tarjetas para esta sección
             }
         }
 
@@ -132,6 +136,7 @@ class SweetAlert {
             seccionDiv.insertBefore(nuevoTarjetasContainer, seccionDiv.querySelector('.btn-container'));
         }
 
+        const tarjetaId = this.getTarjetaId(seccionId); // Obtener un ID único para la tarjeta
         const nuevaTarjeta = document.createElement('div');
         nuevaTarjeta.className = 'card';
         nuevaTarjeta.innerHTML = `
@@ -143,12 +148,17 @@ class SweetAlert {
             </div>
         `;
 
+        nuevaTarjeta.dataset.id = tarjetaId; // Asignar el ID a la tarjeta
         tarjetasContainer.appendChild(nuevaTarjeta);
         this.saveTarjetas(seccionId);
     }
 }
 
-
+    getTarjetaId = (seccionId) => {
+        const seccionIdNum = parseInt(seccionId);
+        const tarjetasData = JSON.parse(localStorage.getItem(`seccion-${seccionIdNum}-tarjetas`)) || [];
+        return tarjetasData.length + 1; // Devolver el siguiente ID disponible
+    }
 
 
 
@@ -169,27 +179,52 @@ class SweetAlert {
     }
 
     loadTarjetas = (seccionId) => {
-        const seccionIdNum = parseInt(seccionId);
-        const tarjetasData = JSON.parse(localStorage.getItem(`seccion-${seccionIdNum}-tarjetas`)) || [];
-
-        const tarjetasContainer = document.querySelector(`[data-id="${seccionId}"] .tarjetas-container`);
-        tarjetasContainer.innerHTML = ''; // Limpiar contenido anterior
-
-        for (const tarjetaData of tarjetasData) {
-            const nuevaTarjeta = document.createElement('div');
-            nuevaTarjeta.className = 'card';
-            nuevaTarjeta.innerHTML = `
-                <h5 class="card-header">${tarjetaData.titulo}</h5>
-                <div class="card-body">
-                    <h5 class="card-title">${tarjetaData.titulo}</h5>
-                    <p class="card-text">${tarjetaData.contenido}</p>
-                    <a href="#" class="btn btn-primary">Editar</a>
-                </div>
-            `;
-
-            tarjetasContainer.appendChild(nuevaTarjeta);
+        const seccionDiv = document.querySelector(`[data-id="${seccionId}"]`);
+        if (seccionDiv) {
+            const tarjetasData = JSON.parse(localStorage.getItem(`seccion-${seccionId}-tarjetas`)) || [];
+            const tarjetasContainer = seccionDiv.querySelector('.tarjetas-container');
+    
+            if (tarjetasContainer) {
+                tarjetasContainer.innerHTML = ''; // Limpiar contenido anterior
+    
+                for (const tarjetaData of tarjetasData) {
+                    const nuevaTarjeta = document.createElement('div');
+                    nuevaTarjeta.className = 'card';
+                    nuevaTarjeta.innerHTML = `
+                        <h5 class="card-header">${tarjetaData.titulo}</h5>
+                        <div class="card-body">
+                            <h5 class="card-title">${tarjetaData.titulo}</h5>
+                            <p class="card-text">${tarjetaData.contenido}</p>
+                            <a href="#" class="btn btn-primary">Editar</a>
+                        </div>
+                    `;
+    
+                    tarjetasContainer.appendChild(nuevaTarjeta);
+                }
+            } else {
+                const nuevoTarjetasContainer = document.createElement('div');
+                nuevoTarjetasContainer.className = 'tarjetas-container';
+    
+                for (const tarjetaData of tarjetasData) {
+                    const nuevaTarjeta = document.createElement('div');
+                    nuevaTarjeta.className = 'card';
+                    nuevaTarjeta.innerHTML = `
+                        <h5 class="card-header">${tarjetaData.titulo}</h5>
+                        <div class="card-body">
+                            <h5 class="card-title">${tarjetaData.titulo}</h5>
+                            <p class="card-text">${tarjetaData.contenido}</p>
+                            <a href="#" class="btn btn-primary">Editar</a>
+                        </div>
+                    `;
+    
+                    nuevoTarjetasContainer.appendChild(nuevaTarjeta);
+                }
+    
+                seccionDiv.insertBefore(nuevoTarjetasContainer, seccionDiv.querySelector('.btn-container'));
+            }
         }
     }
+    
 
     editarTarjeta = (event) => {
         const tarjetaDiv = event.target.closest('.card');
